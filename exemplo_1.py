@@ -72,7 +72,7 @@ linha_1.V_alimentador = complex(2.400,0)
 linha_1.perdasLinha()
 print(f'Tensão de saída: {abs(linha_1.V_saída):.2f}/__{angulo(linha_1.V_saída):.2f}')
 print(f'Corrente na linha 1: {abs(linha_1.I_linha):.2f}/__{angulo(linha_1.I_linha):.2f}')
-print(T1.tensão_secundário(linha_1.V_saída))
+
 print('-'*30)
 '--------------------------Linha 2---------------------------------------------------------------'
 linha_2.V_alimentador = linha_1.V_saída/1000
@@ -86,3 +86,10 @@ linha_3.perdasLinha()
 print(f'Tensão de saída: {abs(linha_3.V_saída):.2f}/__{angulo(linha_3.V_saída):.2f}')
 print(f'Corrente na linha 3: {abs(linha_3.I_linha):.2f}/__{angulo(linha_3.I_linha):.2f}')
 print('-'*30)
+
+print(abs(T1.V_secundario))
+show(T1.V_secundario)
+T1.tensão_secundário(linha_1.V_saída)
+show(T1.V_secundario)
+show(T1.V_secundario*T1.RT)
+print(T1.queda_tensao)

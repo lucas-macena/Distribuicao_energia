@@ -64,8 +64,12 @@ class transformador:
 
     def tensão_secundário(self,V_primário):
         self.V_primario = V_primário
-        self.I_trafo = (complex(self.P_nominal,self.Q_nominal)/self.V_primario).conjugate()
-        self.V_secundario = self.V_primario - self.I_trafo*self.RT*pow(self.Z_ohms,2)
+        self.I_trafo = (complex(self.P_nominal,self.Q_nominal)*1000/self.V_primario).conjugate()
+        self.V_secundario = self.V_primario - self.I_trafo*self.Z_ohms
+        # print(f'Corrente I_trafo: {abs(self.I_trafo):.2f}/__{angulo(self.I_trafo):.2f}')
+        self.queda_tensao = (self.V_nominal*1000-abs(self.V_secundario))*100/(self.V_nominal*1000)
+
+        self.V_secundario=self.V_secundario/self.RT
         return self.V_secundario
 
 class consumidor:
@@ -109,7 +113,8 @@ class alimentador:
         '''
         fator = buscar_Fator_Diversidade(self.n_clientes)
         self.Dmax_diversificado = self.D_não_diversificada_max/fator #tbm chamada de metered demand
-        self.fator_alocação = self.Dmax_diversificado/self.kVA_max
+
+        self.fator_alocação = round(self.Dmax_diversificado/self.kVA_max,3)
 
         for T in range(0,len(self.transformadores)):
             self.transformadores[T].alocação = self.fator_alocação * self.transformadores[T].S_nominal
@@ -136,3 +141,8 @@ class alimentador:
 def buscar_Fator_Diversidade(n_consumidores):
     return fatores_diversidade[n_consumidores-1]
 
+def show(A,nome=''):
+    if nome!= '':
+        print(f'{nome}: {abs(A):.2f}/__{angulo(A):.2f}')
+    else:
+        print(f'{abs(A):.2f}/__{angulo(A):.2f}')
