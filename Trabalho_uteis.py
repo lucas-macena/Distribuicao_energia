@@ -1,15 +1,73 @@
+import xlwt
+import xlrd
+import os
+import csv
 
-from Trabalho_1_4 import *
+fatores_diversidade = [1.0, 1.0725423573110187, 1.1848670603372433, 1.2470395093660798, 1.2626534319167826, 1.227810064696714, 1.4757765425626987, 1.4757765425626987, 1.4901465177968767, 1.5990317735797046, 1.5228830519144663, 1.572651544647009, 1.694060736358098, 1.7454289906447376, 1.7451296173240705, 1.7123196103782907, 1.6912576217639281, 1.6912576217639281]
 
-def leitura_To_Hora(leitura):
-    '''Alice'''
+def DefinirDia(indice):
+    x = indice - 11519
 
-    return '-'
+    codigoDia = int(x / 96)
+
+    if codigoDia == 0:
+        return "Domingo"
+
+    if codigoDia == 1:
+        return "Segunda"
+
+    if codigoDia == 2:
+        return "Terça"
+
+    if codigoDia == 3:
+        return "Quarta"
+
+    if codigoDia == 4:
+        return "Quinta"
+
+    if codigoDia == 5:
+        return "Sexta"
+
+    if codigoDia == 6:
+        return "Sábado"
+
+def DefinirHora(indice):
+    x = indice - 11519
+
+    HoraMin = ((x/96)-int(x/96))*96*15
+
+    Hora = int(HoraMin/60)
+    Min = round(HoraMin % 60)
+
+    return  str(Hora) + ':' + str(Min)
+
+def DataHora(indice):
+
+    return  str(DefinirDia(indice)) + ' ' + str(DefinirHora(indice))
+
+
+
+def createWorkbook(name,dest):
+
+    workbook = xlwt.Workbook()
+    worksheet = workbook.add_sheet("Painel")
+    dest = os.path.join(dest, f"{name}.xls")
+    workbook.save(dest)
+    print(f'\nArquivo Criado com sucesso.\nSalvo em {dest}\n')
+    return [workbook,worksheet]
 
 '''Classe de Objeto dos clientes'''
 class cliente:
+
     def __init__(self,demanda,s_instalada):
         self.Demanda = demanda
+        self.soma_Demanda = 0
+
+        for i in demanda:
+            self.soma_Demanda += float(i)
+
+        self.Energia = self.soma_Demanda/4
+
         self.S_instalada = float(s_instalada)
 
         self.Demanda_Máx = float(max(self.Demanda,key=float))
@@ -85,10 +143,11 @@ def escrever_dados_cliente(plan_resultados,posição,label,cliente):
     plan_resultados.write(posição, 5, cliente.F_carga)
     plan_resultados.write(posição, 6, cliente.leitura_Demanda_Máx)
     plan_resultados.write(posição, 7, cliente.hora_Demanda_Máx)
+    plan_resultados.write(posição, 10, cliente.Energia)
     try:
         plan_resultados.write(posição, 8, cliente.Demanda_Máx_não_div)
         plan_resultados.write(posição, 9, cliente.F_diversidade)
-
+        plan_resultados.write(posição, 12, cliente.DeMax_div_questao_8)
         return
     except:
         return

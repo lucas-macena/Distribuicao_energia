@@ -1,11 +1,16 @@
-from uteis import *
 from Trabalho_uteis import *
+
 
 
 '''Definição dos diretórios de arquivos'''
 path = os.path.abspath('')
 path_clientes = os.path.join(path,'database','dados_clientes.xlsx')
+path_CSV = os.path.join(path,'database','DmaxNDivRamais.csv')
 
+'''Arquivo CSV'''
+arquivo = open(path_CSV,'w', newline='',encoding='utf-8')
+write = csv.writer(arquivo,delimiter = ',')
+CSV_demanda_não_div = list()
 
 """Leitura do excel e criação de variáveis de controle"""
 plan_clientes = xlrd.open_workbook(path_clientes)
@@ -27,6 +32,8 @@ plan_resultados.write(0, 6, "Leitura da Demanda Máx")
 plan_resultados.write(0, 7, "Dia e hora da leitura")
 plan_resultados.write(0, 8, "Demanda Máx Não Div")
 plan_resultados.write(0, 9, "F_diversidade")
+plan_resultados.write(0, 10, "Energia consumida")
+plan_resultados.write(0, 12, "DeMáx_div_questão_8")
 
 '''Criação da lista de valores com a potência instalada'''
 S_instalada = sheet_S_instalada.col_values(colx=1,start_rowx=0)
@@ -86,6 +93,7 @@ Sistema = cliente(demanda_sistema[1:],soma_S_instalada)
 Sistema.Demanda_Máx_não_div = soma_Demanda_máx_não_div
 Sistema.F_diversidade = Sistema.Demanda_Máx_não_div/Sistema.Demanda_Máx
 
+
 escrever_dados_cliente(plan_resultados,1,'Sistema',Sistema)
 '''=============================================================================================================='''
 '''=============================================================================================================='''
@@ -136,14 +144,26 @@ for ramal in range(1,8):
     novo_ramal = cliente(demanda_ramal[1:],soma_S_instalada)
     novo_ramal.Demanda_Máx_não_div = soma_Demanda_máx_não_div
     novo_ramal.F_diversidade = novo_ramal.Demanda_Máx_não_div/novo_ramal.Demanda_Máx
+    novo_ramal.n_clientes = n_clientes_ramal
+
+    '''Cálculos relacionados ao item 8 do trabalho'''
+    novo_ramal.DeMax_n_div = novo_ramal.Energia * 0.0149 + 1.7066
+
+    FD = round(fatores_diversidade[novo_ramal.n_clientes - 1], 3)
+
+    novo_ramal.DeMax_div_questao_8 = novo_ramal.DeMax_n_div / FD
+
     '''Adiciona o objeto de ramal à lista de objetos dos ramais'''
     Ramais.append(novo_ramal)
 
     '''Escreve os resultados daquele ramal na planilha de resultados'''
-
+    CSV_demanda_não_div.append(novo_ramal.Demanda_Máx_não_div)
     escrever_dados_cliente(plan_resultados,ramal + 1,"Ramal " + str(ramal),novo_ramal)
 
 
 """Salva o arquivo do excel"""
+write.writerow(['1','2','3','4','5','6','7'])
+write.writerow(CSV_demanda_não_div)
+
 path_to_save = os.path.join(path,'database','resultados.xls')
 resultados.save(path_to_save)
