@@ -40,7 +40,7 @@ I_3f = complex(I_3f*fp,I_3f*sin(-acos(fp)))
 '''Queda de tensão por aproximação e K drop'''
 dV = (z_positiva*I_3f).real
 V_fase = V_nominal/sqrt(3)
-K_drop = 100*dV/V_fase
+K_drop = 100*dV/V_fase #[%/MVA.milha]
 
 '''K rise'''
 I = polar2rect(abs(I_3f),90)
@@ -66,8 +66,8 @@ Q_cap = (dv_diferença/(K_rise*soma_comprimentos))*1000 #MVAr
 # print(dv_diferença)
 
 '''Exibir resultados'''
-print(f'Impedância seq. pos.: {z_positiva:.2f}')
-print(f'K drop: {K_drop:.2f}%')
-print(f'K rise: {K_rise:.2f}%')
+print(f'Impedância seq. pos.: {z_positiva:.2f} omh/milha')
+print(f'K drop: {K_drop:.2f}%/MVA.milha')
+print(f'K rise: {K_rise:.2f}%/MVA.milha')
 print(f'Queda de tensão percentual: {soma_dV_percentual:.2f}%')
-print(f'Potência do banco de capacitores: {Q_cap:.2f} kVAr')
+print(f'Potência do banco de capacitores: {Q_cap:.2f} MVAr')
